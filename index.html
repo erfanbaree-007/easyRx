@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EasyRx - AI Medical Translation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M4 12C4 7.58172 7.58172 4 12 4H28C32.4183 4 36 7.58172 36 12V24C36 28.4183 32.4183 32 28 32H16L6 38V32H12C7.58172 32 4 28.4183 4 24V12Z' fill='%23059669'/%3E%3Cpath d='M12 11V23' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M12 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M17 19L22 26' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M20 23.5L26 18.5' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M26 23.5L20 18.5' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      /* Custom scrollbar for text areas */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 3px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #94a3b8;
+      }
+      /* Dark mode scrollbar */
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #475569;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: #64748b;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

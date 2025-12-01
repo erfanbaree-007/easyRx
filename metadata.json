@@ -1,0 +1,7 @@
+{
+  "name": "MediLingua",
+  "description": "Instantly extract and translate text from images using Google Gemini AI.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
