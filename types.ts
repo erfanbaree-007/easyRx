@@ -18,6 +18,14 @@ export interface LanguageOption {
   flag: string;
 }
 
+export type PlanType = 'free' | 'pro';
+
+export interface SubscriptionState {
+  plan: PlanType;
+  scansToday: number;
+  lastScanDate: string; // YYYY-MM-DD
+}
+
 export const TARGET_LANGUAGES: LanguageOption[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
   { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },

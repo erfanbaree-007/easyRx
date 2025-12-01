@@ -3,10 +3,13 @@ import { CameraModal } from './components/CameraModal';
 import { LanguageSelector } from './components/LanguageSelector';
 import { ResultCard } from './components/ResultCard';
 import { HistoryDrawer } from './components/HistoryDrawer';
+import { CropModal } from './components/CropModal';
+import { SubscriptionModal } from './components/SubscriptionModal';
 import { performOcrAndTranslate } from './services/geminiService';
 import { TranslationResponse, TARGET_LANGUAGES, LanguageOption, HistoryItem } from './types';
 import { fileToBase64, resizeImage } from './utils/imageUtils';
 import { getHistory, saveToHistory, clearHistory } from './utils/historyUtils';
+import { getSubscriptionState, canScan, incrementScanCount, upgradeToPro, getRemainingFreeScans } from './utils/subscriptionUtils';
 import { translations, LanguageCode } from './utils/translations';
 
 // Supported UI Languages
@@ -27,6 +30,10 @@ export const App: React.FC = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Crop State
+  const [tempFile, setTempFile] = useState<File | null>(null);
+  const [isCropOpen, setIsCropOpen] = useState(false);
+  
   // History State
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -41,12 +48,18 @@ export const App: React.FC = () => {
   // Drag and Drop State
   const [isDragging, setIsDragging] = useState(false);
 
+  // Subscription State
+  const [subscription, setSubscription] = useState(getSubscriptionState());
+  const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
+  const [isLimitReached, setIsLimitReached] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uiLangRef = useRef<HTMLDivElement>(null);
 
-  // Load history, UI language, and Theme on mount
+  // Load history, UI language, Theme, and Subscription on mount
   useEffect(() => {
     setHistory(getHistory());
+    setSubscription(getSubscriptionState());
     
     // Language
     const savedLang = localStorage.getItem('uiLanguage') as LanguageCode;
@@ -96,26 +109,55 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleUpgrade = () => {
+    const newSub = upgradeToPro();
+    setSubscription(newSub);
+    setIsSubscriptionModalOpen(false);
+    setIsLimitReached(false);
+    // Optional: Show success toast
+  };
+
   const t = translations[uiLanguage];
   const isRtl = uiLanguage === 'ur';
 
-  const handleFileSelect = async (file: File) => {
-    setError(null);
-    setSelectedFile(file);
-    
-    // Create preview
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-    setResult(null); // Reset previous result
+  // Initial file selection - triggers crop modal
+  const handleFileSelect = (file: File) => {
+    // Check subscription limits before starting workflow
+    if (!canScan()) {
+      setIsLimitReached(true);
+      setIsSubscriptionModalOpen(true);
+      return;
+    }
 
-    // Cleanup object URL when component unmounts or file changes
-    return () => URL.revokeObjectURL(objectUrl);
+    setError(null);
+    setTempFile(file);
+    setIsCropOpen(true);
   };
 
   const onFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       handleFileSelect(e.target.files[0]);
     }
+  };
+
+  // Called after crop is confirmed or skipped
+  const handleCropComplete = (file: File) => {
+    setIsCropOpen(false);
+    setTempFile(null);
+    setSelectedFile(file);
+
+    // Create preview
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setResult(null); // Reset previous result
+  };
+
+  const handleCropCancel = () => {
+     setIsCropOpen(false);
+     setTempFile(null);
+     if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+     }
   };
 
   // Drag and Drop Handlers
@@ -147,6 +189,13 @@ export const App: React.FC = () => {
   const processImage = async () => {
     if (!selectedFile) return;
 
+    // Double check limit before calling API
+    if (!canScan()) {
+      setIsLimitReached(true);
+      setIsSubscriptionModalOpen(true);
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
 
@@ -161,6 +210,10 @@ export const App: React.FC = () => {
       // Save to history
       const updatedHistory = saveToHistory(translation, targetLang.name);
       setHistory(updatedHistory);
+
+      // Increment usage count
+      const newSubState = incrementScanCount();
+      setSubscription(newSubState);
       
     } catch (err: any) {
       console.error(err);
@@ -182,7 +235,6 @@ export const App: React.FC = () => {
   };
 
   const handleHistorySelect = (item: HistoryItem) => {
-    // Determine target language object from history item
     const matchedLang = TARGET_LANGUAGES.find(l => l.name === item.targetLanguage);
     if (matchedLang) {
       setTargetLang(matchedLang);
@@ -195,8 +247,6 @@ export const App: React.FC = () => {
       imageDescription: item.imageDescription,
     });
     
-    // We don't have the image file for history items, so we clear the file input
-    // but keep the result visible.
     setSelectedFile(null);
     setPreviewUrl(null);
     setError(null);
@@ -217,23 +267,47 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-3">
             {/* EasyRx Logo */}
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-               {/* Chat bubble body */}
                <path d="M4 12C4 7.58172 7.58172 4 12 4H28C32.4183 4 36 7.58172 36 12V24C36 28.4183 32.4183 32 28 32H16L6 38V32H12C7.58172 32 4 28.4183 4 24V12Z" fill="#059669"/>
-               
-               {/* R */}
                <path d="M12 11V23" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                <path d="M12 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                <path d="M17 19L22 26" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-               
-               {/* x */}
-               <path d="M12 29L14.5 20.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0"/> {/* Hidden old path */}
                <path d="M20 23.5L26 18.5" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
                <path d="M26 23.5L20 18.5" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
             </svg>
-            <span className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight hidden sm:block">EasyRx</span>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight leading-none hidden sm:block">EasyRx</span>
+              {subscription.plan === 'pro' && (
+                <span className="text-[10px] uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider hidden sm:block">Pro</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             
+            {/* Subscription Status Button */}
+            <button 
+              onClick={() => {
+                setIsLimitReached(false);
+                setIsSubscriptionModalOpen(true);
+              }}
+              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5
+                ${subscription.plan === 'pro' 
+                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300' 
+                  : 'bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 hover:shadow-md hover:scale-105'}
+              `}
+            >
+              {subscription.plan === 'pro' ? (
+                <>
+                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  PRO
+                </>
+              ) : (
+                <>
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                  {t.upgradeToPro}
+                </>
+              )}
+            </button>
+
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
@@ -294,9 +368,6 @@ export const App: React.FC = () => {
                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                <span className="hidden sm:inline">{t.history}</span>
              </button>
-            <a href="#" className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hidden lg:block">
-              {t.poweredBy}
-            </a>
           </div>
         </div>
       </header>
@@ -312,6 +383,11 @@ export const App: React.FC = () => {
             <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto transition-colors">
               {t.introDesc}
             </p>
+            {subscription.plan === 'free' && (
+              <div className="inline-block mt-4 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium text-slate-600 dark:text-slate-300">
+                {getRemainingFreeScans()} {t.scansRemaining}
+              </div>
+            )}
           </div>
         )}
 
@@ -380,6 +456,12 @@ export const App: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                        e.stopPropagation(); 
+                       // Check limits before opening camera
+                       if (!canScan()) {
+                         setIsLimitReached(true);
+                         setIsSubscriptionModalOpen(true);
+                         return;
+                       }
                        setIsCameraOpen(true);
                     }}
                     className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-medium shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all z-20 relative"
@@ -490,6 +572,19 @@ export const App: React.FC = () => {
           errorCamera: t.errorCamera
         }}
       />
+
+      <CropModal
+        isOpen={isCropOpen}
+        file={tempFile}
+        onClose={handleCropCancel}
+        onComplete={handleCropComplete}
+        labels={{
+          cropTitle: t.cropTitle,
+          cropBtn: t.cropBtn,
+          skipBtn: t.skipBtn,
+          cancel: t.cancel
+        }}
+      />
       
       <HistoryDrawer
         isOpen={isHistoryOpen}
@@ -503,6 +598,29 @@ export const App: React.FC = () => {
           noHistory: t.noHistory,
           historyDesc: t.historyDesc
         }}
+      />
+
+      <SubscriptionModal
+        isOpen={isSubscriptionModalOpen}
+        onClose={() => setIsSubscriptionModalOpen(false)}
+        onUpgrade={handleUpgrade}
+        labels={{
+          unlockPro: t.unlockPro,
+          planFreeDesc: t.planFreeDesc,
+          planProDesc: t.planProDesc,
+          freePlan: t.freePlan,
+          proPlan: t.proPlan,
+          featureScans: t.featureScans,
+          featureSpeed: t.featureSpeed,
+          featureQuality: t.featureQuality,
+          featureAds: t.featureAds,
+          subscribeBtn: t.subscribeBtn,
+          restorePurchase: t.restorePurchase,
+          popular: t.popular,
+          limitReached: t.limitReached,
+          limitReachedDesc: t.limitReachedDesc
+        }}
+        isLimitReached={isLimitReached}
       />
     </div>
   );

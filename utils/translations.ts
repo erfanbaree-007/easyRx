@@ -33,6 +33,26 @@ export interface TranslationDictionary {
   errorDrop: string;
   toggleTheme: string;
   retry: string;
+  cropTitle: string;
+  cropBtn: string;
+  skipBtn: string;
+  upgradeToPro: string;
+  freePlan: string;
+  proPlan: string;
+  scansRemaining: string;
+  limitReached: string;
+  limitReachedDesc: string;
+  unlockPro: string;
+  restorePurchase: string;
+  popular: string;
+  planFreeDesc: string;
+  planProDesc: string;
+  featureScans: string;
+  featureSpeed: string;
+  featureQuality: string;
+  featureAds: string;
+  subscribeBtn: string;
+  currentPlan: string;
 }
 
 export const translations: Record<LanguageCode, TranslationDictionary> = {
@@ -68,7 +88,27 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     errorCamera: "Unable to access camera. Please allow permission or try uploading a file.",
     errorDrop: "Please drop an image file.",
     toggleTheme: "Toggle dark mode",
-    retry: "Retry"
+    retry: "Retry",
+    cropTitle: "Crop Image",
+    cropBtn: "Crop",
+    skipBtn: "Use Original",
+    upgradeToPro: "Upgrade to Pro",
+    freePlan: "Free",
+    proPlan: "Pro",
+    scansRemaining: "scans left today",
+    limitReached: "Daily Limit Reached",
+    limitReachedDesc: "You have used your free scans for today. Upgrade to Pro for unlimited access.",
+    unlockPro: "Unlock Pro Features",
+    restorePurchase: "Restore Purchase",
+    popular: "Most Popular",
+    planFreeDesc: "For casual use",
+    planProDesc: "For professionals",
+    featureScans: "3 Daily Scans",
+    featureSpeed: "Standard Speed",
+    featureQuality: "Standard Accuracy",
+    featureAds: "Ad-supported",
+    subscribeBtn: "Subscribe for $4.99/mo",
+    currentPlan: "Current Plan"
   },
   bn: {
     appTitle: "EasyRx",
@@ -102,7 +142,27 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     errorCamera: "ক্যামেরা অ্যাক্সেস করা যাচ্ছে না। অনুমতি দিন বা ফাইল আপলোড করুন।",
     errorDrop: "অনুগ্রহ করে একটি ছবি ফাইল দিন।",
     toggleTheme: "থিম পরিবর্তন করুন",
-    retry: "পুনরায় চেষ্টা করুন"
+    retry: "পুনরায় চেষ্টা করুন",
+    cropTitle: "ছবি কাটুন",
+    cropBtn: "কাটুন",
+    skipBtn: "আসল ব্যবহার করুন",
+    upgradeToPro: "প্রো আপগ্রেড করুন",
+    freePlan: "ফ্রি",
+    proPlan: "প্রো",
+    scansRemaining: "স্ক্যান বাকি",
+    limitReached: "দৈনিক সীমা শেষ",
+    limitReachedDesc: "আজকের ফ্রি স্ক্যান শেষ। আনলিমিটেড অ্যাক্সেসের জন্য প্রো আপগ্রেড করুন।",
+    unlockPro: "প্রো ফিচার আনলক করুন",
+    restorePurchase: "রিস্টোর করুন",
+    popular: "জনপ্রিয়",
+    planFreeDesc: "সাধারণ ব্যবহারের জন্য",
+    planProDesc: "পেশাদারদের জন্য",
+    featureScans: "৩টি দৈনিক স্ক্যান",
+    featureSpeed: "সাধারণ গতি",
+    featureQuality: "সাধারণ নির্ভুলতা",
+    featureAds: "বিজ্ঞাপন সহ",
+    subscribeBtn: "সাবস্ক্রাইব করুন $৪.৯৯/মাস",
+    currentPlan: "বর্তমান প্ল্যান"
   },
   hi: {
     appTitle: "EasyRx",
@@ -136,7 +196,27 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     errorCamera: "कैमरे तक पहुँचने में असमर्थ। कृपया अनुमति दें या फ़ाइल अपलोड करें।",
     errorDrop: "कृपया एक छवि फ़ाइल छोड़ें।",
     toggleTheme: "थीम बदलें",
-    retry: "पुनः प्रयास करें"
+    retry: "पुनः प्रयास करें",
+    cropTitle: "छवि काटें",
+    cropBtn: "काटें",
+    skipBtn: "मूल का उपयोग करें",
+    upgradeToPro: "प्रो में अपग्रेड करें",
+    freePlan: "फ्री",
+    proPlan: "प्रो",
+    scansRemaining: "स्कैन बचे हैं",
+    limitReached: "दैनिक सीमा समाप्त",
+    limitReachedDesc: "आपने आज के फ्री स्कैन का उपयोग कर लिया है। अनलिमिटेड एक्सेस के लिए प्रो में अपग्रेड करें।",
+    unlockPro: "प्रो फीचर्स अनलॉक करें",
+    restorePurchase: "खरीदारी बहाल करें",
+    popular: "सबसे लोकप्रिय",
+    planFreeDesc: "सामान्य उपयोग के लिए",
+    planProDesc: "पेशेवरों के लिए",
+    featureScans: "3 दैनिक स्कैन",
+    featureSpeed: "मानक गति",
+    featureQuality: "मानक सटीकता",
+    featureAds: "विज्ञापन समर्थित",
+    subscribeBtn: "सदस्यता लें $4.99/माह",
+    currentPlan: "वर्तमान योजना"
   },
   ur: {
     appTitle: "EasyRx",
@@ -170,7 +250,27 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     errorCamera: "کیمرے تک رسائی سے قاصر۔ براہ کرم اجازت دیں یا فائل اپ لوڈ کریں۔",
     errorDrop: "براہ کرم تصویر کی فائل ڈالیں۔",
     toggleTheme: "تھیم تبدیل کریں",
-    retry: "دوبارہ کوشش کریں"
+    retry: "دوبارہ کوشش کریں",
+    cropTitle: "تصویر کاٹیں",
+    cropBtn: "کاٹیں",
+    skipBtn: "اصل استعمال کریں",
+    upgradeToPro: "پرو میں اپ گریڈ کریں",
+    freePlan: "مفت",
+    proPlan: "پرو",
+    scansRemaining: "اسکین باقی ہیں",
+    limitReached: "روزانہ کی حد ختم",
+    limitReachedDesc: "آپ نے آج کے مفت اسکین استعمال کر لیے ہیں۔ لامحدود رسائی کے لیے پرو میں اپ گریڈ کریں۔",
+    unlockPro: "پرو فیچرز کھولیں",
+    restorePurchase: "خریداری بحال کریں",
+    popular: "سب سے زیادہ مقبول",
+    planFreeDesc: "عام استعمال کے لیے",
+    planProDesc: "پیشہ ور افراد کے لیے",
+    featureScans: "3 روزانہ اسکین",
+    featureSpeed: "معیاری رفتار",
+    featureQuality: "معیاری درستگی",
+    featureAds: "اشتہار کے ساتھ",
+    subscribeBtn: "سبسکرائب کریں $4.99/ماہ",
+    currentPlan: "موجودہ منصوبہ"
   },
   zh: {
     appTitle: "EasyRx",
@@ -204,6 +304,26 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     errorCamera: "无法访问相机。请授予权限或尝试上传文件。",
     errorDrop: "请拖放图片文件。",
     toggleTheme: "切换主题",
-    retry: "重试"
+    retry: "重试",
+    cropTitle: "裁剪图片",
+    cropBtn: "裁剪",
+    skipBtn: "使用原图",
+    upgradeToPro: "升级到 Pro",
+    freePlan: "免费",
+    proPlan: "专业版",
+    scansRemaining: "今日剩余",
+    limitReached: "达到每日限额",
+    limitReachedDesc: "您已使用完今日的免费扫描次数。升级到 Pro 以获得无限访问权限。",
+    unlockPro: "解锁 Pro 功能",
+    restorePurchase: "恢复购买",
+    popular: "最受欢迎",
+    planFreeDesc: "适合日常使用",
+    planProDesc: "适合专业人士",
+    featureScans: "每日 3 次扫描",
+    featureSpeed: "标准速度",
+    featureQuality: "标准准确度",
+    featureAds: "含广告",
+    subscribeBtn: "订阅 $4.99/月",
+    currentPlan: "当前计划"
   }
 };
