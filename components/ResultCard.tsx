@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ResultCardProps {
   title: string;
@@ -9,10 +9,12 @@ interface ResultCardProps {
   description?: string;
   errorMessage?: string;
   onRetry?: () => void;
+  onPlayAudio?: (text: string) => Promise<void>;
   labels: {
     noText: string;
     imageContent: string;
     retry: string;
+    playAudio?: string;
   }
 }
 
@@ -25,12 +27,28 @@ export const ResultCard: React.FC<ResultCardProps> = ({
   description,
   errorMessage,
   onRetry,
+  onPlayAudio,
   labels
 }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const handleCopy = () => {
     if (content) {
       navigator.clipboard.writeText(content);
       // Optional: Could add a toast notification here
+    }
+  };
+
+  const handlePlay = async () => {
+    if (content && onPlayAudio) {
+      setIsPlaying(true);
+      try {
+        await onPlayAudio(content);
+      } catch (e) {
+        console.error("Audio playback error", e);
+      } finally {
+        setIsPlaying(false);
+      }
     }
   };
 
@@ -45,15 +63,34 @@ export const ResultCard: React.FC<ResultCardProps> = ({
             </span>
           )}
         </div>
-        {content && !isLoading && !errorMessage && (
-          <button 
-            onClick={handleCopy}
-            className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
-            title="Copy text"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          </button>
-        )}
+        <div className="flex items-center gap-1">
+          {content && onPlayAudio && !isLoading && !errorMessage && (
+             <button
+                onClick={handlePlay}
+                disabled={isPlaying}
+                className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/50 disabled:opacity-50"
+                title={labels.playAudio || "Play Audio"}
+             >
+                {isPlaying ? (
+                  <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                )}
+             </button>
+          )}
+          {content && !isLoading && !errorMessage && (
+            <button 
+              onClick={handleCopy}
+              className="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors p-1.5 rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
+              title="Copy text"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex-grow p-5 relative min-h-[200px] overflow-auto custom-scrollbar">
         {isLoading ? (

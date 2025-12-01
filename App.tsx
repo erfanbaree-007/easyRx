@@ -5,12 +5,13 @@ import { ResultCard } from './components/ResultCard';
 import { HistoryDrawer } from './components/HistoryDrawer';
 import { CropModal } from './components/CropModal';
 import { SubscriptionModal } from './components/SubscriptionModal';
-import { performOcrAndTranslate } from './services/geminiService';
+import { performOcrAndTranslate, generateSpeech } from './services/geminiService';
 import { TranslationResponse, TARGET_LANGUAGES, LanguageOption, HistoryItem } from './types';
 import { fileToBase64, resizeImage } from './utils/imageUtils';
 import { getHistory, saveToHistory, clearHistory } from './utils/historyUtils';
 import { getSubscriptionState, canScan, incrementScanCount, upgradeToPro, getRemainingFreeScans } from './utils/subscriptionUtils';
 import { translations, LanguageCode } from './utils/translations';
+import { decode, decodeAudioData } from './utils/audioUtils';
 
 // Supported UI Languages
 const UI_LANGUAGES: { code: LanguageCode; name: string; flag: string }[] = [
@@ -220,6 +221,31 @@ export const App: React.FC = () => {
       setError(t.errorProcess);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handlePlayAudio = async (text: string) => {
+    if (!text) return;
+    
+    try {
+      const base64Audio = await generateSpeech(text);
+      
+      // Decode and Play
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({sampleRate: 24000});
+      const audioBuffer = await decodeAudioData(
+        decode(base64Audio),
+        audioContext,
+        24000,
+        1,
+      );
+      
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.start();
+    } catch (err) {
+      console.error("Failed to play audio:", err);
+      // Optionally show an error toast
     }
   };
 
@@ -554,7 +580,8 @@ export const App: React.FC = () => {
                   language={targetLang.name}
                   isLoading={isProcessing}
                   isEmpty={!result?.translatedText && !isProcessing}
-                  labels={{ noText: t.noText, imageContent: t.imageContent, retry: t.retry }}
+                  labels={{ noText: t.noText, imageContent: t.imageContent, retry: t.retry, playAudio: t.playAudio }}
+                  onPlayAudio={handlePlayAudio}
                 />
              </div>
           </div>

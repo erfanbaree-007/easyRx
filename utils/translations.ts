@@ -53,6 +53,7 @@ export interface TranslationDictionary {
   featureAds: string;
   subscribeBtn: string;
   currentPlan: string;
+  playAudio: string;
 }
 
 export const translations: Record<LanguageCode, TranslationDictionary> = {
@@ -108,7 +109,8 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     featureQuality: "Standard Accuracy",
     featureAds: "Ad-supported",
     subscribeBtn: "Subscribe for $4.99/mo",
-    currentPlan: "Current Plan"
+    currentPlan: "Current Plan",
+    playAudio: "Play Audio"
   },
   bn: {
     appTitle: "EasyRx",
@@ -162,7 +164,8 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     featureQuality: "সাধারণ নির্ভুলতা",
     featureAds: "বিজ্ঞাপন সহ",
     subscribeBtn: "সাবস্ক্রাইব করুন $৪.৯৯/মাস",
-    currentPlan: "বর্তমান প্ল্যান"
+    currentPlan: "বর্তমান প্ল্যান",
+    playAudio: "অডিও চালান"
   },
   hi: {
     appTitle: "EasyRx",
@@ -216,7 +219,8 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     featureQuality: "मानक सटीकता",
     featureAds: "विज्ञापन समर्थित",
     subscribeBtn: "सदस्यता लें $4.99/माह",
-    currentPlan: "वर्तमान योजना"
+    currentPlan: "वर्तमान योजना",
+    playAudio: "ऑडियो चलाएं"
   },
   ur: {
     appTitle: "EasyRx",
@@ -270,7 +274,8 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     featureQuality: "معیاری درستگی",
     featureAds: "اشتہار کے ساتھ",
     subscribeBtn: "سبسکرائب کریں $4.99/ماہ",
-    currentPlan: "موجودہ منصوبہ"
+    currentPlan: "موجودہ منصوبہ",
+    playAudio: "آڈیو چلائیں"
   },
   zh: {
     appTitle: "EasyRx",
@@ -324,6 +329,7 @@ export const translations: Record<LanguageCode, TranslationDictionary> = {
     featureQuality: "标准准确度",
     featureAds: "含广告",
     subscribeBtn: "订阅 $4.99/月",
-    currentPlan: "当前计划"
+    currentPlan: "当前计划",
+    playAudio: "播放音频"
   }
 };
